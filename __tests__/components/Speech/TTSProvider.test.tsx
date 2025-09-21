@@ -160,7 +160,7 @@ describe('TTSProvider Component', () => {
     await user.click(speakButton);
 
     // Should clean text and remove emojis
-    expect(mockSpeechSynthesisUtterance).toHaveBeenCalledWith('שלום  עולם! 123');
+    expect(mockSpeechSynthesisUtterance).toHaveBeenCalledWith('שלום עולם! 123');
   });
 
   test('stops speech when stop is called', async () => {
@@ -230,8 +230,9 @@ describe('TTSProvider Component', () => {
   });
 
   test('handles unsupported browsers gracefully', () => {
-    // Remove speech synthesis support
+    // Remove speech synthesis support before rendering
     delete global.speechSynthesis;
+    delete global.SpeechSynthesisUtterance;
 
     render(
       <TTSProvider>
@@ -240,6 +241,10 @@ describe('TTSProvider Component', () => {
     );
 
     expect(screen.getByTestId('supported')).toHaveTextContent('not-supported');
+
+    // Restore for other tests
+    global.speechSynthesis = mockSpeechSynthesis;
+    global.SpeechSynthesisUtterance = mockSpeechSynthesisUtterance;
   });
 
   test('pauses and resumes speech correctly', () => {
@@ -356,6 +361,7 @@ describe('TTSProvider Component', () => {
 
   test('handles speech synthesis errors gracefully', async () => {
     const user = userEvent.setup();
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     // Mock speech synthesis to throw error
     mockSpeechSynthesis.speak.mockImplementation(() => {
@@ -369,10 +375,15 @@ describe('TTSProvider Component', () => {
     );
 
     const speakButton = screen.getByText('Speak Hebrew');
+
+    // This should not throw an error
     await user.click(speakButton);
 
     // Should not crash and should handle error gracefully
     expect(speakButton).toBeInTheDocument();
+
+    // Clean up console spy
+    consoleErrorSpy.mockRestore();
   });
 
   test('does not speak when TTS is disabled', async () => {

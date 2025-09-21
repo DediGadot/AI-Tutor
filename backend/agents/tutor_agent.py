@@ -11,7 +11,7 @@ from typing import Dict, Any, Optional, List, TypedDict
 from datetime import datetime, timezone
 from dataclasses import dataclass, asdict
 
-from langgraph import StateGraph, END
+from langgraph.graph import StateGraph, END
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 
 from services.litellm_client import LiteLLMClient, ModelType

@@ -27,7 +27,7 @@ PROJECT_ROOT = Path(__file__).parent.absolute()
 sys.path.insert(0, str(PROJECT_ROOT))
 
 # Hebrew faker for test data
-fake = Faker(['he_IL', 'en_US'])
+fake = Faker('he_IL')
 fake.add_provider(internet)
 fake.add_provider(lorem)
 

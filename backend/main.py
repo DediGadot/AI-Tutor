@@ -121,7 +121,7 @@ app.add_middleware(
 class SessionStartRequest(BaseModel):
     """Request to start a new tutoring session."""
     student_nickname: str = Field(..., min_length=1, max_length=50)
-    theme: str = Field(..., regex="^(football|space|robots)$")
+    theme: str = Field(..., pattern="^(football|space|robots)$")
     lesson_id: Optional[str] = None
     difficulty_level: int = Field(default=1, ge=1, le=5)
 

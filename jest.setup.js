@@ -4,6 +4,16 @@ import 'jest-localstorage-mock';
 import 'fake-indexeddb/auto';
 import 'jest-canvas-mock';
 
+// Fix userEvent clipboard redefinition issue
+Object.defineProperty(global.navigator, 'clipboard', {
+  value: {
+    writeText: jest.fn(),
+    readText: jest.fn(),
+  },
+  writable: true,
+  configurable: true,
+});
+
 // Mock Next.js router
 jest.mock('next/router', () => ({
   useRouter() {

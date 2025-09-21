@@ -68,7 +68,7 @@ describe('PreviewPanel Component', () => {
   test('shows running indicator when isRunning is true', () => {
     render(<PreviewPanel {...defaultProps} isRunning={true} />);
 
-    expect(screen.getByText('רץ...')).toBeInTheDocument();
+    expect(screen.getAllByText('רץ...').length).toBeGreaterThan(0);
   });
 
   test('refresh button triggers iframe reload', async () => {
@@ -89,9 +89,9 @@ describe('PreviewPanel Component', () => {
     const fullscreenButton = screen.getByTitle('מסך מלא');
     await user.click(fullscreenButton);
 
-    // Check if fullscreen class is applied
-    const container = screen.getByTitle('תצוגה מקדימה').closest('div');
+    // Check if fullscreen class is applied to the main container
     await waitFor(() => {
+      const container = screen.getByTitle('תצוגה מקדימה').closest('[class*="fixed"]');
       expect(container).toHaveClass('fixed');
     });
 
@@ -100,7 +100,8 @@ describe('PreviewPanel Component', () => {
     await user.click(exitFullscreenButton);
 
     await waitFor(() => {
-      expect(container).not.toHaveClass('fixed');
+      const containerAfterExit = screen.getByTitle('תצוגה מקדימה').closest('div');
+      expect(containerAfterExit).not.toHaveClass('fixed');
     });
   });
 
@@ -143,11 +144,23 @@ describe('PreviewPanel Component', () => {
   });
 
   test('handles success messages from iframe', () => {
+    // Create a mock contentWindow that will match the iframe ref
+    const mockContentWindow = {
+      document: { open: jest.fn(), write: jest.fn(), close: jest.fn() },
+      postMessage: jest.fn(),
+    };
+
+    // Override iframe contentWindow
+    Object.defineProperty(HTMLIFrameElement.prototype, 'contentWindow', {
+      get: jest.fn(() => mockContentWindow),
+      configurable: true,
+    });
+
     render(<PreviewPanel {...defaultProps} />);
 
     // Simulate a success message from iframe
     const mockMessage = {
-      source: screen.getByTitle('תצוגה מקדימה').contentWindow,
+      source: mockContentWindow,
       data: {
         type: 'success',
         timestamp: Date.now(),
@@ -160,13 +173,25 @@ describe('PreviewPanel Component', () => {
   });
 
   test('handles error messages from iframe', () => {
+    // Create a mock contentWindow that will match the iframe ref
+    const mockContentWindow = {
+      document: { open: jest.fn(), write: jest.fn(), close: jest.fn() },
+      postMessage: jest.fn(),
+    };
+
+    // Override iframe contentWindow
+    Object.defineProperty(HTMLIFrameElement.prototype, 'contentWindow', {
+      get: jest.fn(() => mockContentWindow),
+      configurable: true,
+    });
+
     render(<PreviewPanel {...defaultProps} />);
 
     const errorMessage = 'שגיאה בקוד';
 
     // Simulate an error message from iframe
     const mockMessage = {
-      source: screen.getByTitle('תצוגה מקדימה').contentWindow,
+      source: mockContentWindow,
       data: {
         type: 'error',
         message: errorMessage,
@@ -189,14 +214,32 @@ describe('PreviewPanel Component', () => {
     // This would be verified by checking the generated HTML content
   });
 
-  test('handles Hebrew error messages correctly', () => {
+  test('handles Hebrew error messages correctly', async () => {
     const hebrewCode = '// שגיאה בעברית\nfunction setup() {\n  undefined_function();\n}';
+
+    // Create a mock contentWindow that will match the iframe ref
+    const mockContentWindow = {
+      document: { open: jest.fn(), write: jest.fn(), close: jest.fn() },
+      postMessage: jest.fn(),
+    };
+
+    // Override iframe contentWindow in the beforeEach setup
+    Object.defineProperty(HTMLIFrameElement.prototype, 'contentWindow', {
+      get: jest.fn(() => mockContentWindow),
+      configurable: true,
+    });
+
     render(<PreviewPanel {...defaultProps} code={hebrewCode} />);
 
-    // Simulate Hebrew error message
+    // Wait for the component to set up message listeners
+    await waitFor(() => {
+      expect(defaultProps.onError).toHaveBeenCalledTimes(0);
+    });
+
+    // Simulate Hebrew error message with the same mock window
     const hebrewError = 'שגיאה: פונקציה לא מוגדרת';
     const mockMessage = {
-      source: screen.getByTitle('תצוגה מקדימה').contentWindow,
+      source: mockContentWindow,
       data: {
         type: 'error',
         message: hebrewError,

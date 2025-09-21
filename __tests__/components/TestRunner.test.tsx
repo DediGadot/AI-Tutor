@@ -49,6 +49,16 @@ describe('TestRunner Component', () => {
     theme: 'football',
   };
 
+  // Create a consistent mock contentWindow
+  const mockContentWindow = {
+    document: {
+      open: jest.fn(),
+      write: jest.fn(),
+      close: jest.fn(),
+    },
+    postMessage: jest.fn(),
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -63,14 +73,7 @@ describe('TestRunner Component', () => {
     });
 
     Object.defineProperty(HTMLIFrameElement.prototype, 'contentWindow', {
-      get: jest.fn(() => ({
-        document: {
-          open: jest.fn(),
-          write: jest.fn(),
-          close: jest.fn(),
-        },
-        postMessage: jest.fn(),
-      })),
+      get: jest.fn(() => mockContentWindow),
       configurable: true,
     });
   });
@@ -124,7 +127,7 @@ describe('TestRunner Component', () => {
 
     // Simulate test start message
     const mockMessage = {
-      source: screen.getByTitle('Test Runner').contentWindow,
+      source: mockContentWindow,
       data: {
         type: 'testStart',
         data: { index: 0, name: 'בדיקת קנווס' },
@@ -142,7 +145,7 @@ describe('TestRunner Component', () => {
 
     // Simulate test completion
     const mockMessage = {
-      source: screen.getByTitle('Test Runner').contentWindow,
+      source: mockContentWindow,
       data: {
         type: 'testComplete',
         data: {
@@ -186,7 +189,7 @@ describe('TestRunner Component', () => {
 
     // Simulate all tests completed
     const mockMessage = {
-      source: screen.getByTitle('Test Runner').contentWindow,
+      source: mockContentWindow,
       data: {
         type: 'allTestsComplete',
         data: { results: passedResults },
@@ -222,7 +225,7 @@ describe('TestRunner Component', () => {
 
     // Simulate mixed test results
     const mockMessage = {
-      source: screen.getByTitle('Test Runner').contentWindow,
+      source: mockContentWindow,
       data: {
         type: 'allTestsComplete',
         data: { results: mixedResults },
@@ -277,7 +280,7 @@ describe('TestRunner Component', () => {
 
     // Simulate test execution progress
     const testStartMessage = {
-      source: screen.getByTitle('Test Runner').contentWindow,
+      source: mockContentWindow,
       data: {
         type: 'testStart',
         data: { index: 0, name: 'בדיקת קנווס' },
@@ -302,7 +305,7 @@ describe('TestRunner Component', () => {
     };
 
     const mockMessage = {
-      source: screen.getByTitle('Test Runner').contentWindow,
+      source: mockContentWindow,
       data: {
         type: 'testComplete',
         data: { index: 0, result: testResult },
@@ -329,7 +332,7 @@ describe('TestRunner Component', () => {
     };
 
     const mockMessage = {
-      source: screen.getByTitle('Test Runner').contentWindow,
+      source: mockContentWindow,
       data: {
         type: 'testComplete',
         data: { index: 0, result: failedResult },
@@ -351,7 +354,7 @@ describe('TestRunner Component', () => {
     ];
 
     const mockMessage = {
-      source: screen.getByTitle('Test Runner').contentWindow,
+      source: mockContentWindow,
       data: {
         type: 'allTestsComplete',
         data: { results },

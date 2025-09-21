@@ -17,6 +17,7 @@ jest.mock('@monaco-editor/react', () => ({
       data-testid="monaco-editor"
       value={value}
       onChange={(e) => onChange?.(e.target.value)}
+      aria-label="עורך קוד"
       {...props}
     />
   ),
@@ -27,10 +28,14 @@ jest.mock('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
       'playground.run': 'הרץ',
+      'playground.runAndCheck': 'הרץ',
       'playground.reset': 'איפוס',
       'playground.hint': 'רמז',
+      'playground.getHint': 'רמז',
       'playground.running': 'רץ...',
       'playground.codeEditor': 'עורך קוד',
+      'playground.editor': 'עורך קוד',
+      'common.loading': 'טוען...',
     };
     return translations[key] || key;
   },
@@ -47,8 +52,11 @@ describe('CodeEditor Component', () => {
     hasHints: true,
   };
 
+  let user: ReturnType<typeof userEvent.setup>;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    user = userEvent.setup();
   });
 
   test('renders code editor with basic functionality', () => {
@@ -61,20 +69,17 @@ describe('CodeEditor Component', () => {
   });
 
   test('handles code changes', async () => {
-    const user = userEvent.setup();
     render(<CodeEditor {...defaultProps} />);
 
     const editor = screen.getByTestId('monaco-editor');
-    await user.clear(editor);
-    await user.type(editor, 'function setup() { createCanvas(400, 300); }');
+    const newCode = 'function setup() { createCanvas(400, 300); }';
 
-    expect(defaultProps.onChange).toHaveBeenCalledWith(
-      'function setup() { createCanvas(400, 300); }'
-    );
+    fireEvent.change(editor, { target: { value: newCode } });
+
+    expect(defaultProps.onChange).toHaveBeenCalledWith(newCode);
   });
 
   test('run button triggers onRun callback', async () => {
-    const user = userEvent.setup();
     render(<CodeEditor {...defaultProps} />);
 
     const runButton = screen.getByText('הרץ');
@@ -84,7 +89,6 @@ describe('CodeEditor Component', () => {
   });
 
   test('reset button triggers onReset callback', async () => {
-    const user = userEvent.setup();
     render(<CodeEditor {...defaultProps} />);
 
     const resetButton = screen.getByText('איפוס');
@@ -94,7 +98,6 @@ describe('CodeEditor Component', () => {
   });
 
   test('hint button triggers onGetHint callback', async () => {
-    const user = userEvent.setup();
     render(<CodeEditor {...defaultProps} />);
 
     const hintButton = screen.getByText('רמז');
@@ -143,7 +146,6 @@ describe('CodeEditor Component', () => {
   });
 
   test('keyboard shortcuts work correctly', async () => {
-    const user = userEvent.setup();
     render(<CodeEditor {...defaultProps} />);
 
     const editor = screen.getByTestId('monaco-editor');
@@ -171,7 +173,6 @@ describe('CodeEditor Component', () => {
   });
 
   test('code editor maintains focus during typing', async () => {
-    const user = userEvent.setup();
     render(<CodeEditor {...defaultProps} />);
 
     const editor = screen.getByTestId('monaco-editor');

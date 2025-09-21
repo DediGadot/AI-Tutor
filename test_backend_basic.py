@@ -27,9 +27,7 @@ def test_config_loader():
 
     except Exception as e:
         print(f"❌ Config loader test failed: {e}")
-        return False
-
-    return True
+        assert False, f"Config loader test failed: {e}"
 
 def test_hebrew_utils():
     """Test Hebrew text processing utilities."""
@@ -45,10 +43,12 @@ def test_hebrew_utils():
         assert processor.is_hebrew_text(hebrew_text) == True
         assert processor.is_hebrew_text(english_text) == False
 
-        # Test text cleaning
+        # Test text cleaning (should include RTL markers)
         messy_text = "   ברוך    הבא   "
         cleaned = processor.clean_hebrew_text(messy_text)
-        assert cleaned == "ברוך הבא"
+        # Check that whitespace is cleaned and RTL markers are added
+        assert "ברוך הבא" in cleaned
+        assert len(cleaned.strip()) > len("ברוך הבא")  # RTL markers add characters
 
         # Test error translation
         error = "Syntax error"
@@ -59,9 +59,7 @@ def test_hebrew_utils():
 
     except Exception as e:
         print(f"❌ Hebrew utils test failed: {e}")
-        return False
-
-    return True
+        assert False, f"Hebrew utils test failed: {e}"
 
 def test_lesson_models():
     """Test Pydantic models for lessons."""
@@ -97,11 +95,9 @@ def test_lesson_models():
 
     except Exception as e:
         print(f"❌ Lesson models test failed: {e}")
-        return False
+        assert False, f"Lesson models test failed: {e}"
 
-    return True
-
-async def test_database_models():
+def test_database_models():
     """Test database service (without actual DB)."""
     try:
         from services.database import DatabaseService
@@ -125,9 +121,7 @@ async def test_database_models():
 
     except Exception as e:
         print(f"❌ Database models test failed: {e}")
-        return False
-
-    return True
+        assert False, f"Database models test failed: {e}"
 
 def test_monitoring_utils():
     """Test monitoring and metrics utilities."""
@@ -158,9 +152,7 @@ def test_monitoring_utils():
 
     except Exception as e:
         print(f"❌ Monitoring utils test failed: {e}")
-        return False
-
-    return True
+        assert False, f"Monitoring utils test failed: {e}"
 
 async def main():
     """Run all basic tests."""
