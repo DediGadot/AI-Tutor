@@ -1,0 +1,67 @@
+# Testing Dependencies
+pytest==8.3.4
+pytest-asyncio==0.25.0
+pytest-mock==3.14.0
+pytest-cov==6.0.0
+pytest-xdist==3.6.0
+pytest-html==4.1.1
+
+# LangGraph and Agent Testing
+langgraph==0.2.68
+langchain==0.3.27
+langchain-core==0.3.22
+langchain-community==0.3.19
+
+# LiteLLM Testing
+litellm==1.55.16
+
+# HTTP Testing
+httpx==0.28.1
+respx==0.22.0
+
+# Playwright for E2E Testing
+playwright==1.49.1
+
+# Performance Testing
+locust==2.32.4
+
+# Security Testing
+bandit==1.8.0
+safety==3.2.11
+
+# Hebrew/RTL Testing Support
+arabic-reshaper==3.0.0
+python-bidi==0.6.1
+
+# Data Factories and Fixtures
+factory-boy==3.3.1
+faker==33.1.0
+
+# Web Testing Support
+selenium==4.28.0
+requests==2.32.3
+
+# Code Quality
+flake8==7.1.1
+black==24.10.0
+isort==5.13.2
+mypy==1.14.0
+
+# Environment Management
+python-dotenv==1.0.1
+
+# Database Testing (for session/progress data)
+sqlalchemy==2.0.36
+alembic==1.14.0
+pytest-postgresql==6.1.0
+
+# API Testing
+fastapi==0.115.6
+starlette==0.41.3
+uvicorn==0.32.1
+
+# Accessibility Testing Support
+axe-core-python==4.10.0
+
+# Monitoring and Observability Testing
+prometheus-client==0.21.1

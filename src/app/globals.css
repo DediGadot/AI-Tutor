@@ -1,0 +1,469 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;500;600;700&family=Assistant:wght@400;500;600;700&family=Secular+One&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* RTL Base Styles */
+html[dir="rtl"] {
+  direction: rtl;
+}
+
+html[dir="ltr"] {
+  direction: ltr;
+}
+
+/* Global styles for Hebrew support */
+:root {
+  --font-hebrew: "Noto Sans Hebrew", "Assistant", system-ui, sans-serif;
+  --font-display: "Secular One", "Noto Sans Hebrew", system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--font-hebrew);
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Accessibility improvements */
+*:focus {
+  outline: 2px solid theme('colors.primary.500');
+  outline-offset: 2px;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Accessibility Classes */
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* High contrast mode */
+.high-contrast {
+  --color-primary: #000000;
+  --color-secondary: #ffffff;
+  --color-accent: #0066cc;
+  --color-text: #000000;
+  --color-background: #ffffff;
+  --color-border: #000000;
+}
+
+.high-contrast button {
+  border: 2px solid currentColor !important;
+  background: var(--color-background) !important;
+  color: var(--color-text) !important;
+}
+
+.high-contrast a {
+  color: var(--color-accent) !important;
+  text-decoration: underline !important;
+}
+
+.high-contrast .btn-primary {
+  background: var(--color-text) !important;
+  color: var(--color-background) !important;
+  border: 2px solid var(--color-text) !important;
+}
+
+.high-contrast .btn-secondary {
+  background: var(--color-background) !important;
+  color: var(--color-text) !important;
+  border: 2px solid var(--color-text) !important;
+}
+
+/* Enhanced focus indicators */
+.enhanced-focus *:focus {
+  outline: 3px solid #0066cc !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 5px rgba(0, 102, 204, 0.3) !important;
+}
+
+.enhanced-focus button:focus,
+.enhanced-focus a:focus,
+.enhanced-focus input:focus,
+.enhanced-focus textarea:focus,
+.enhanced-focus select:focus {
+  outline: 3px solid #0066cc !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 5px rgba(0, 102, 204, 0.3) !important;
+}
+
+/* Font size variants */
+.font-small {
+  font-size: 14px;
+}
+
+.font-medium {
+  font-size: 16px;
+}
+
+.font-large {
+  font-size: 18px;
+}
+
+.font-xlarge {
+  font-size: 20px;
+}
+
+/* Screen reader optimizations */
+.screen-reader-optimized button,
+.screen-reader-optimized a,
+.screen-reader-optimized input {
+  position: relative;
+}
+
+.screen-reader-optimized button::after,
+.screen-reader-optimized a::after {
+  content: attr(aria-label);
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Skip links */
+.skip-links {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  z-index: 1000;
+}
+
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: #000;
+  color: #fff;
+  padding: 8px;
+  text-decoration: none;
+  z-index: 100;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.skip-link:focus {
+  top: 6px;
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sr-only:focus,
+.sr-only:active {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* WCAG 2.2 AA minimum touch target size */
+.min-h-touch {
+  min-height: 44px;
+}
+
+.min-w-touch {
+  min-width: 44px;
+}
+
+/* Ensure all interactive elements meet touch target requirements */
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+a.btn,
+.btn {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* RTL specific accessibility improvements */
+html[dir="rtl"] .skip-link {
+  right: 6px;
+  left: auto;
+}
+
+html[dir="rtl"] .skip-link:focus {
+  right: 6px;
+  left: auto;
+}
+
+/* Keyboard navigation indicators */
+[role="button"]:focus,
+[role="tab"]:focus,
+[role="option"]:focus,
+[role="menuitem"]:focus {
+  outline: 2px solid theme('colors.primary.500');
+  outline-offset: 2px;
+}
+
+/* Live regions for screen readers */
+[aria-live="polite"],
+[aria-live="assertive"] {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Error state accessibility */
+[aria-invalid="true"] {
+  border-color: theme('colors.error.500') !important;
+  box-shadow: 0 0 0 2px theme('colors.error.200') !important;
+}
+
+[aria-describedby] + .error-message {
+  color: theme('colors.error.700');
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Loading state accessibility */
+[aria-busy="true"] {
+  cursor: wait;
+  pointer-events: none;
+}
+
+/* Progress indicators */
+.progress-bar[role="progressbar"] {
+  border-radius: 4px;
+  background: theme('colors.primary.200');
+}
+
+.progress-bar[role="progressbar"]::before {
+  content: "";
+  display: block;
+  height: 100%;
+  background: theme('colors.primary.600');
+  border-radius: inherit;
+  transition: width 0.3s ease;
+  width: var(--progress-width, 0%);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --color-primary: #000000;
+    --color-secondary: #ffffff;
+    --color-accent: #0066cc;
+  }
+}
+
+/* Touch-friendly styles */
+@media (pointer: coarse) {
+  button,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Custom scrollbar for RTL */
+.scrollbar-rtl {
+  scrollbar-width: thin;
+  scrollbar-color: theme('colors.gray.400') theme('colors.gray.100');
+}
+
+.scrollbar-rtl::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar-rtl::-webkit-scrollbar-track {
+  background: theme('colors.gray.100');
+}
+
+.scrollbar-rtl::-webkit-scrollbar-thumb {
+  background: theme('colors.gray.400');
+  border-radius: 4px;
+}
+
+.scrollbar-rtl::-webkit-scrollbar-thumb:hover {
+  background: theme('colors.gray.500');
+}
+
+/* Monaco editor RTL support */
+.monaco-editor.vs .view-lines {
+  direction: inherit;
+}
+
+/* P5.js canvas container */
+.p5-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.p5-container canvas {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+/* Animation classes for gamification */
+.xp-animation {
+  animation: slideInUp 0.5s ease-out;
+}
+
+.badge-animation {
+  animation: confetti 0.8s ease-out;
+}
+
+.streak-glow {
+  box-shadow: 0 0 20px theme('colors.warning.400');
+}
+
+/* Hebrew text optimization */
+.hebrew-text {
+  font-feature-settings: "kern" 1, "liga" 1;
+  text-align: start;
+  line-height: 1.6;
+}
+
+/* Button variants for consistent touch targets */
+.btn-touch {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-primary {
+  @apply btn-touch bg-primary-600 text-white hover:bg-primary-700 focus:ring-4 focus:ring-primary-200;
+}
+
+.btn-secondary {
+  @apply btn-touch bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-4 focus:ring-gray-100;
+}
+
+.btn-success {
+  @apply btn-touch bg-success-600 text-white hover:bg-success-700 focus:ring-4 focus:ring-success-200;
+}
+
+.btn-warning {
+  @apply btn-touch bg-warning-600 text-white hover:bg-warning-700 focus:ring-4 focus:ring-warning-200;
+}
+
+.btn-error {
+  @apply btn-touch bg-error-600 text-white hover:bg-error-700 focus:ring-4 focus:ring-error-200;
+}
+
+/* Card styles */
+.card {
+  @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+}
+
+.card-hover {
+  @apply card transition-shadow hover:shadow-md;
+}
+
+/* Test result styles */
+.test-pass {
+  @apply text-success-700 bg-success-50 border-success-200;
+}
+
+.test-fail {
+  @apply text-error-700 bg-error-50 border-error-200;
+}
+
+.test-pending {
+  @apply text-warning-700 bg-warning-50 border-warning-200;
+}
+
+/* Loading spinner */
+.spinner {
+  border: 2px solid theme('colors.gray.200');
+  border-top: 2px solid theme('colors.primary.600');
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Layout utilities for RTL */
+.layout-rtl {
+  direction: rtl;
+}
+
+.layout-ltr {
+  direction: ltr;
+}
+
+/* Code block styling */
+.code-block {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  background: theme('colors.gray.100');
+  border-radius: 6px;
+  padding: 1rem;
+  overflow-x: auto;
+  border: 1px solid theme('colors.gray.200');
+}
+
+/* Progress indicators */
+.progress-bar {
+  background: linear-gradient(90deg, theme('colors.primary.500'), theme('colors.primary.600'));
+  height: 8px;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-container {
+  background: theme('colors.gray.200');
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+}

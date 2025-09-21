@@ -1,0 +1,238 @@
+{
+  "learning_effectiveness_metrics": {
+    "milestone_progression": {
+      "metric_name": "milestones_per_session",
+      "target_value": 3,
+      "measurement_unit": "milestones/20min",
+      "calculation": "count_milestones_completed / session_duration_minutes * 20",
+      "data_points": [
+        "milestone_started_timestamp",
+        "milestone_completed_timestamp",
+        "session_start_timestamp",
+        "session_end_timestamp"
+      ]
+    },
+    "concept_retention": {
+      "metric_name": "retention_percentage",
+      "target_value": 80,
+      "measurement_unit": "percentage",
+      "calculation": "correct_answers_after_24h / total_retention_tests * 100",
+      "data_points": [
+        "concept_first_learned_timestamp",
+        "retention_test_timestamp",
+        "retention_test_result",
+        "concept_difficulty_level"
+      ]
+    },
+    "hint_usage_analysis": {
+      "metric_name": "hint_requests_per_milestone",
+      "target_value": 2,
+      "measurement_unit": "hints/milestone",
+      "calculation": "total_hint_requests / milestones_completed",
+      "data_points": [
+        "hint_requested_timestamp",
+        "hint_auto_shown_timestamp",
+        "milestone_id",
+        "hint_type",
+        "hint_effectiveness_score"
+      ]
+    },
+    "learning_curve_velocity": {
+      "metric_name": "time_to_mastery",
+      "target_value": 300,
+      "measurement_unit": "seconds",
+      "calculation": "milestone_completion_time - milestone_start_time",
+      "data_points": [
+        "attempts_before_success",
+        "time_spent_reading_hints",
+        "time_spent_coding",
+        "concept_complexity_score"
+      ]
+    },
+    "skill_mastery_progression": {
+      "metric_name": "mastery_score",
+      "target_value": 0.85,
+      "measurement_unit": "score_0_to_1",
+      "calculation": "weighted_average(recent_performance, concept_difficulty)",
+      "data_points": [
+        "concept_last_pass_timestamp",
+        "concept_fail_count",
+        "rolling_performance_score",
+        "spaced_repetition_interval"
+      ]
+    }
+  },
+  "performance_benchmarks": {
+    "load_times": {
+      "first_contentful_paint": {
+        "target": 1500,
+        "unit": "milliseconds",
+        "measurement_method": "Performance API"
+      },
+      "largest_contentful_paint": {
+        "target": 2000,
+        "unit": "milliseconds",
+        "measurement_method": "Performance Observer"
+      },
+      "time_to_interactive": {
+        "target": 2500,
+        "unit": "milliseconds",
+        "measurement_method": "Lighthouse metrics"
+      }
+    },
+    "test_execution_speed": {
+      "mocha_test_runtime": {
+        "target": 500,
+        "unit": "milliseconds",
+        "measurement_method": "Mocha hooks timing"
+      },
+      "p5js_canvas_render": {
+        "target": 16.67,
+        "unit": "milliseconds_per_frame",
+        "measurement_method": "RequestAnimationFrame timing"
+      }
+    },
+    "resource_utilization": {
+      "memory_usage": {
+        "target": 50,
+        "unit": "megabytes",
+        "measurement_method": "Performance.memory API"
+      },
+      "cpu_usage": {
+        "target": 30,
+        "unit": "percentage",
+        "measurement_method": "Long task observer"
+      }
+    }
+  },
+  "accessibility_compliance": {
+    "rtl_language_support": {
+      "css_logical_properties": {
+        "test_method": "automated_css_validation",
+        "target": "100%_compliance",
+        "validation_rules": [
+          "margin-inline-start instead of margin-left",
+          "padding-inline-end instead of padding-right",
+          "border-inline-start instead of border-left"
+        ]
+      },
+      "text_direction": {
+        "test_method": "visual_regression_testing",
+        "target": "proper_rtl_rendering",
+        "validation_points": [
+          "menu_alignment",
+          "button_positioning",
+          "text_flow_direction",
+          "icon_mirroring"
+        ]
+      }
+    },
+    "target_interaction_sizes": {
+      "minimum_target_size": {
+        "target": 24,
+        "unit": "css_pixels",
+        "test_method": "automated_accessibility_scan",
+        "elements_to_test": [
+          "buttons",
+          "links",
+          "form_controls",
+          "interactive_canvas_elements"
+        ]
+      }
+    },
+    "voice_features": {
+      "tts_functionality": {
+        "test_method": "automated_speech_synthesis_test",
+        "target": "hebrew_voice_available",
+        "fallback_strategy": "text_display_only"
+      },
+      "stt_functionality": {
+        "test_method": "microphone_permission_test",
+        "target": "graceful_degradation",
+        "fallback_strategy": "keyboard_input_only"
+      }
+    },
+    "wcag_compliance": {
+      "color_contrast": {
+        "target": "AA_level",
+        "ratio": 4.5,
+        "test_method": "automated_contrast_checker"
+      },
+      "keyboard_navigation": {
+        "target": "full_keyboard_access",
+        "test_method": "tab_order_validation"
+      }
+    }
+  },
+  "user_experience_analytics": {
+    "session_engagement": {
+      "duration_tracking": {
+        "metric": "session_duration_minutes",
+        "target": 20,
+        "collection_method": "page_visibility_api"
+      },
+      "interaction_frequency": {
+        "metric": "actions_per_minute",
+        "target": 3,
+        "collection_method": "event_listener_counting"
+      }
+    },
+    "feature_interaction_heatmaps": {
+      "click_tracking": {
+        "collection_method": "mouse_event_coordinates",
+        "privacy_level": "anonymized_aggregated"
+      },
+      "scroll_behavior": {
+        "collection_method": "scroll_event_tracking",
+        "privacy_level": "anonymized_aggregated"
+      }
+    },
+    "user_satisfaction": {
+      "completion_rate": {
+        "metric": "milestones_completed_percentage",
+        "target": 85,
+        "collection_method": "milestone_completion_tracking"
+      },
+      "frustration_indicators": {
+        "metric": "hint_to_code_time_ratio",
+        "target": 0.3,
+        "collection_method": "time_tracking_analysis"
+      }
+    }
+  },
+  "analytics_integration": {
+    "posthog": {
+      "api_key": "ENV_POSTHOG_API_KEY",
+      "host": "https://app.posthog.com",
+      "events": [
+        "lesson_opened",
+        "milestone_started",
+        "run_clicked",
+        "tests_passed",
+        "tests_failed",
+        "hint_requested",
+        "milestone_completed",
+        "badge_awarded",
+        "session_completed"
+      ]
+    },
+    "matomo": {
+      "site_id": "ENV_MATOMO_SITE_ID",
+      "tracker_url": "ENV_MATOMO_TRACKER_URL",
+      "privacy_settings": {
+        "anonymize_ip": true,
+        "respect_dnt": true,
+        "cookie_less_tracking": true
+      }
+    },
+    "plausible": {
+      "domain": "ENV_PLAUSIBLE_DOMAIN",
+      "api_host": "ENV_PLAUSIBLE_API_HOST",
+      "privacy_features": {
+        "no_cookies": true,
+        "no_personal_data": true,
+        "gdpr_compliant": true
+      }
+    }
+  }
+}

@@ -1,0 +1,214 @@
+# LiteLLM Proxy Configuration for Hebrew AI Tutor
+# This file configures the LiteLLM proxy server for model routing and management
+
+model_list:
+  # Hebrew Coaching Model - Optimized for educational content
+  - model_name: gpt-4-hebrew-coach
+    litellm_params:
+      model: gpt-4
+      api_key: ${OPENAI_API_KEY}
+      max_tokens: 1500
+      temperature: 0.8
+      top_p: 0.9
+    model_info:
+      description: "Hebrew educational coaching and lesson planning"
+      tags: ["hebrew", "education", "coaching"]
+      tpm: 100000
+      rpm: 1000
+
+  # Code Feedback Model - Optimized for technical feedback
+  - model_name: claude-code-feedback
+    litellm_params:
+      model: claude-3-sonnet-20240229
+      api_key: ${ANTHROPIC_API_KEY}
+      max_tokens: 1200
+      temperature: 0.6
+      top_p: 0.95
+    model_info:
+      description: "Code review and technical feedback"
+      tags: ["code", "feedback", "technical"]
+      tpm: 80000
+      rpm: 800
+
+  # Creative Content Model - Optimized for game content generation
+  - model_name: gemini-creative
+    litellm_params:
+      model: gemini-pro
+      api_key: ${GOOGLE_API_KEY}
+      max_tokens: 1000
+      temperature: 0.9
+      top_p: 0.8
+    model_info:
+      description: "Creative content generation for games"
+      tags: ["creative", "games", "content"]
+      tpm: 60000
+      rpm: 600
+
+  # OpenRouter fallback models (if enabled)
+  - model_name: openrouter-gpt4
+    litellm_params:
+      model: openai/gpt-4
+      api_base: https://openrouter.ai/api/v1
+      api_key: ${OPENROUTER_API_KEY}
+      max_tokens: 1200
+      temperature: 0.7
+    model_info:
+      description: "OpenRouter GPT-4 fallback"
+      tags: ["fallback", "openrouter"]
+      tpm: 50000
+      rpm: 500
+
+  - model_name: openrouter-claude
+    litellm_params:
+      model: anthropic/claude-3-sonnet
+      api_base: https://openrouter.ai/api/v1
+      api_key: ${OPENROUTER_API_KEY}
+      max_tokens: 1200
+      temperature: 0.6
+    model_info:
+      description: "OpenRouter Claude fallback"
+      tags: ["fallback", "openrouter"]
+      tpm: 40000
+      rpm: 400
+
+# Router settings for intelligent model selection
+router_settings:
+  routing_strategy: usage-based-routing-v2
+  routing_strategy_args:
+    cooldown_time: 300  # 5 minutes cooldown for failed models
+    num_retries: 3
+    retry_delay: 1
+
+  # Redis configuration for state persistence
+  redis_host: ${REDIS_HOST:-localhost}
+  redis_port: ${REDIS_PORT:-6379}
+  redis_password: ${REDIS_PASSWORD}
+
+  # Enable pre-call checks
+  enable_pre_call_checks: true
+
+  # Fallback strategy
+  allowed_fails: 3
+  cooldown_time: 300
+
+# General configuration
+general_settings:
+  # Master key for proxy access
+  master_key: ${LITELLM_MASTER_KEY}
+
+  # Database configuration for logging
+  database_url: ${DATABASE_URL:-sqlite:///./litellm_proxy.db}
+
+  # Enable/disable features
+  store_model_in_db: true
+  cache: true
+  cache_params:
+    type: "redis"
+    host: ${REDIS_HOST:-localhost}
+    port: ${REDIS_PORT:-6379}
+    ttl: 600  # 10 minutes cache
+
+  # Cost tracking
+  track_cost_per_tenant: true
+
+  # Enable detailed logging
+  log_level: "INFO"
+  success_callback: ["langfuse", "prometheus"]
+  failure_callback: ["sentry"]
+
+# Environment-specific settings
+environment_variables:
+  OPENAI_API_KEY: ${OPENAI_API_KEY}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+  GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+  OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+  REDIS_HOST: ${REDIS_HOST:-localhost}
+  REDIS_PORT: ${REDIS_PORT:-6379}
+  REDIS_PASSWORD: ${REDIS_PASSWORD}
+  DATABASE_URL: ${DATABASE_URL:-sqlite:///./litellm_proxy.db}
+  LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:-hebrew-tutor-secret}
+
+# Model-specific prompts and system messages
+model_prompts:
+  gpt-4-hebrew-coach:
+    system_prompt: |
+      אתה מדריך בעברית לילדים בכיתה ה' הלומדים תכנות.
+      תמיד השתמש בשפה עדינה, מעודדת וברורה.
+      הסבר מושגים טכניים בשפה פשוטה ומובנת לילדים.
+      השתמש בדוגמאות מהחיים היומיומיים והנושאים שהילדים אוהבים (כדורגל, חלל, רובוטים).
+
+  claude-code-feedback:
+    system_prompt: |
+      You are a code reviewer for educational programming exercises.
+      Provide constructive feedback on JavaScript/p5.js code written by 5th-grade students.
+      Focus on functionality, best practices, and learning opportunities.
+      Translate technical feedback into Hebrew when responding to students.
+
+  gemini-creative:
+    system_prompt: |
+      You are a creative content generator for educational programming games.
+      Create engaging game scenarios, challenges, and examples for:
+      - Football/soccer themes
+      - Space exploration themes
+      - Robot/transformer themes
+      Keep content age-appropriate for 5th-grade students (ages 10-11).
+
+# Rate limiting per model
+rate_limit_settings:
+  gpt-4-hebrew-coach:
+    rpm: 1000
+    tpm: 100000
+    max_parallel_requests: 50
+
+  claude-code-feedback:
+    rpm: 800
+    tpm: 80000
+    max_parallel_requests: 40
+
+  gemini-creative:
+    rpm: 600
+    tpm: 60000
+    max_parallel_requests: 30
+
+# Health check configuration
+health_check:
+  enabled: true
+  endpoint: "/health"
+  detailed: true
+  include_model_status: true
+
+# Monitoring and observability
+observability:
+  # Prometheus metrics
+  prometheus:
+    enabled: true
+    port: 9090
+
+  # Langfuse tracing
+  langfuse:
+    enabled: false
+    public_key: ${LANGFUSE_PUBLIC_KEY}
+    secret_key: ${LANGFUSE_SECRET_KEY}
+    host: ${LANGFUSE_HOST}
+
+  # Sentry error tracking
+  sentry:
+    enabled: false
+    dsn: ${SENTRY_DSN}
+
+# Security settings
+security:
+  enable_cors: true
+  cors_origins: ["http://localhost:3000", "http://localhost:3001"]
+
+  # Request validation
+  max_request_size_mb: 10
+  max_response_size_mb: 50
+
+  # API key validation
+  enforce_key_validation: true
+
+  # Rate limiting
+  global_rate_limit:
+    rpm: 2000
+    tpm: 200000

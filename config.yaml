@@ -1,0 +1,567 @@
+# Hebrew AI Tutor Configuration
+# This file contains all system parameters, prompts, and lesson structure
+
+system:
+  version: "1.0.0"
+  name: "Hebrew AI Tutor"
+  default_locale: "he"
+  session_timeout_minutes: 20
+  auto_save_interval_seconds: 30
+  debug_mode: false
+
+# LLM and Agent Configuration
+llm:
+  # LiteLLM proxy settings
+  proxy_url: "http://localhost:4000"
+  default_model: "gpt-4"
+  fallback_models: ["claude-3-sonnet-20240229", "gemini-pro"]
+  max_tokens: 1000
+  temperature: 0.7
+
+  # Router configuration for LiteLLM
+  router_settings:
+    routing_strategy: "usage-based-routing-v2"
+    redis_host: "${REDIS_HOST:-localhost}"
+    redis_port: "${REDIS_PORT:-6379}"
+    enable_pre_call_checks: true
+    fallback_cooldown_seconds: 300
+    max_retries: 3
+
+  # Model list with specific configurations
+  model_list:
+    - model_name: "gpt-4-hebrew-coach"
+      litellm_params:
+        model: "gpt-4"
+        tpm: 100000
+        rpm: 1000
+        max_tokens: 1500
+        temperature: 0.8
+    - model_name: "claude-code-feedback"
+      litellm_params:
+        model: "claude-3-sonnet-20240229"
+        tpm: 80000
+        rpm: 800
+        max_tokens: 1200
+        temperature: 0.6
+    - model_name: "gemini-creative"
+      litellm_params:
+        model: "gemini-pro"
+        tpm: 60000
+        rpm: 600
+        max_tokens: 1000
+        temperature: 0.9
+
+  # Model routing by task type
+  routing:
+    planning: "gpt-4-hebrew-coach"     # Lesson planning and structure
+    coaching: "claude-code-feedback"   # Hebrew hints and encouragement
+    grading: "gpt-4-hebrew-coach"      # Test evaluation and feedback
+    creative: "gemini-creative"        # Code generation and examples
+
+  # OpenRouter integration (optional)
+  openrouter:
+    enabled: false
+    api_key: "${OPENROUTER_API_KEY}"
+    models: ["openai/gpt-4", "anthropic/claude-3-sonnet", "google/gemini-pro"]
+
+# Agent State Machine Configuration
+agent:
+  states:
+    - name: "planner"
+      description: "Plans 20-minute micro-lessons with 3-4 milestones"
+      max_retries: 3
+      timeout_seconds: 30
+
+    - name: "projector"
+      description: "Generates starter code and test specifications"
+      max_retries: 2
+      timeout_seconds: 20
+
+    - name: "coach"
+      description: "Provides hints and encouragement in Hebrew"
+      max_retries: 5
+      timeout_seconds: 15
+
+    - name: "grader"
+      description: "Evaluates tests and awards XP/badges"
+      max_retries: 2
+      timeout_seconds: 10
+
+  # Hint policy configuration
+  hints:
+    reveal_after_attempts: 1
+    max_hints_per_milestone: 3
+    show_solution_after_attempts: 3
+    hint_delay_seconds: 2
+
+# Gamification System
+gamification:
+  xp:
+    per_milestone: 20
+    per_test_passed: 5
+    bonus_all_tests: 10
+    daily_bonus: 50
+
+  levels:
+    threshold_base: 100
+    threshold_multiplier: 1.2  # Each level requires 20% more XP
+    max_level: 50
+
+  badges:
+    concepts:
+      variables: "משתנה-מאסטר"
+      functions: "פונקציה-פרו"
+      loops: "לולאה-לוחם"
+      conditions: "תנאי-טקטיקן"
+      arrays: "מערך-מלך"
+      objects: "אובייקט-אומן"
+      physics: "פיזיקה-פרופסור"
+      collision: "התנגשות-הירו"
+
+    achievements:
+      first_goal: "שער ראשון"
+      perfect_session: "סשן מושלם"
+      speed_coder: "מתכנת מהיר"
+      streak_master: "מלך הרצף"
+      bug_hunter: "צייד באגים"
+
+  cosmetics:
+    ball_trails: ["basic", "sparkle", "rainbow", "fire"]
+    robot_skins: ["classic", "neon", "steampunk", "cyber"]
+    space_effects: ["stars", "nebula", "wormhole", "galaxy"]
+
+# Voice and Accessibility
+accessibility:
+  tts:
+    enabled_by_default: true
+    rate: 0.8
+    pitch: 1.0
+    volume: 0.7
+    preferred_voice: "he-IL"
+
+  stt:
+    enabled_by_default: false  # Due to browser inconsistency
+    continuous: false
+    interim_results: true
+
+  ui:
+    min_touch_target_px: 44    # WCAG 2.2 AA requirement
+    high_contrast_available: true
+    reduce_motion_support: true
+    font_size_scaling: [0.8, 1.0, 1.2, 1.4]
+
+  fonts:
+    primary: "Noto Sans Hebrew"
+    fallback: "Assistant"
+    display: "Secular One"
+
+# Themes Configuration
+themes:
+  football:
+    name: "כדורגל"
+    colors:
+      primary: "#22c55e"    # Green
+      secondary: "#ffffff"  # White
+      accent: "#000000"     # Black
+    assets:
+      ball: "football.svg"
+      field: "grass_field.svg"
+      goal: "goal_posts.svg"
+    sounds:
+      kick: "kick.mp3"
+      goal: "goal_cheer.mp3"
+      bounce: "ball_bounce.mp3"
+
+  space:
+    name: "חלל"
+    colors:
+      primary: "#3b82f6"    # Blue
+      secondary: "#1e1b4b"  # Dark blue
+      accent: "#fbbf24"     # Gold
+    assets:
+      ship: "spaceship.svg"
+      planet: "planet.svg"
+      stars: "starfield.svg"
+    sounds:
+      engine: "rocket_engine.mp3"
+      explosion: "space_explosion.mp3"
+      ambient: "space_ambient.mp3"
+
+  robots:
+    name: "רובוטים"
+    colors:
+      primary: "#6366f1"    # Indigo
+      secondary: "#374151"  # Gray
+      accent: "#f59e0b"     # Orange
+    assets:
+      robot: "robot.svg"
+      factory: "factory.svg"
+      gear: "gear.svg"
+    sounds:
+      beep: "robot_beep.mp3"
+      motor: "servo_motor.mp3"
+      power_up: "robot_powerup.mp3"
+
+# Privacy and Safety
+privacy:
+  collect_pii: false
+  store_code_locally_only: true
+  analytics_opt_in: false
+  data_retention_days: 90
+  parent_dashboard_enabled: true
+
+# Testing and Development
+testing:
+  mocha_timeout_ms: 5000
+  chai_assertion_style: "expect"
+  sandbox_restrictions:
+    - "no-network-access"
+    - "no-file-system"
+    - "memory-limit-50mb"
+    - "execution-timeout-10s"
+
+# Hebrew Prompts and Messages
+prompts:
+  coach:
+    welcome: "ברוך הבא למגרש האימונים! בוא נתחיל ללמוד תכנות דרך משחקים מהנים."
+    encouragement:
+      - "עבודה מעולה! אתה לומד מהר!"
+      - "כל הכבוד! המשך ככה!"
+      - "אני רואה שאתה מבין את זה טוב!"
+      - "נהדר! אתה הופך למתכנת אמיתי!"
+      - "מצוין! זה בדיוק מה שרציתי לראות!"
+
+    hints:
+      gentle: "בוא ננסה משהו קטן. {hint}"
+      progressive: "אני אעזור לך עם זה. {hint}"
+      final: "הנה הדרך לפתור את זה: {solution}"
+
+    errors:
+      syntax: "יש טעות קטנה בקוד. בדוק את השורה {line}."
+      logic: "הקוד רץ, אבל התוצאה לא כמו שציפינו. בוא נחשוב יחד."
+      timeout: "הקוד לוקח יותר מדי זמן לרוץ. אולי יש לולאה אינסופית?"
+
+  planner:
+    system: |
+      אתה מתכנן שיעורים לילד בכיתה ה'. תכנן שיעור של 20 דקות עם 3-4 ציוני דרך.
+      כל ציון דרך צריך:
+      1. מטרה ברורה בעברית
+      2. קוד התחלתי פשוט
+      3. 2-3 בדיקות
+      4. רמז אחד ראשוני
+
+      השתמש בנושא: {theme}
+      רמת קושי: {difficulty}
+      מושגים קודמים: {previous_concepts}
+
+  grader:
+    system: |
+      אתה בודק תוצאות בדיקות ונותן משב חיובי.
+      עבור כל בדיקה שעברה: +5 נקודות ניסיון
+      עבור ציון דרך שהושלם: +20 נקודות ניסיון נוספות
+
+      תן משוב מעודד בעברית ותציין מה הילד למד.
+
+# Lesson Structure Template
+lesson_template:
+  metadata:
+    id: "unique_lesson_id"
+    title: "שם השיעור בעברית"
+    theme: "football|space|robots"
+    duration_minutes: 20
+    difficulty_level: 1-5
+    prerequisites: []
+    concepts_taught: []
+
+  milestones:
+    - id: "milestone_1"
+      goal_he: "מטרת ציון הדרך בעברית"
+      starter_code: |
+        // קוד התחלתי פשוט
+        function setup() {
+          createCanvas(400, 300);
+        }
+
+        function draw() {
+          background(220);
+          // TODO: הוסף כאן את הקוד שלך
+        }
+
+      tests:
+        - name: "בדיקה ראשונה"
+          description: "בודק שיש קנבס"
+          code: |
+            expect(canvas).to.exist;
+            expect(width).to.equal(400);
+            expect(height).to.equal(300);
+
+        - name: "בדיקה שנייה"
+          description: "בודק שהרקע נוצר"
+          code: |
+            expect(background).to.have.been.called;
+
+      hints:
+        - "השתמש בפונקציה createCanvas() כדי ליצור קנבס"
+        - "השתמש בפונקציה background() כדי לצבוע את הרקע"
+
+      xp_reward: 20
+      badge_reward: null
+
+  reflection_questions:
+    - "מה למדת היום על יצירת קנבס?"
+    - "איך אתה חושב שנוכל להוסיף תנועה למשחק?"
+
+  next_lesson_preview: "בשיעור הבא נלמד איך להוסיף כדור שזז על המסך!"
+
+# Error Messages in Hebrew
+error_messages:
+  network_error: "שגיאת חיבור. בדוק את החיבור לאינטרנט."
+  compile_error: "שגיאה בקוד. {error_details}"
+  runtime_error: "השגיאה קרתה בזמן הריצה. {error_details}"
+  timeout_error: "הקוד לוקח יותר מדי זמן לרוץ."
+  memory_error: "הקוד משתמש יותר מדי זיכרון."
+  permission_error: "אין הרשאה לבצע פעולה זו."
+
+# Analytics Events (if enabled)
+analytics:
+  events:
+    - lesson_started
+    - milestone_completed
+    - test_passed
+    - test_failed
+    - hint_requested
+    - solution_revealed
+    - session_completed
+    - badge_earned
+    - level_up
+    - streak_updated
+
+# Asset Credits (CC0 Sources)
+credits:
+  kenney_assets: "https://kenney.nl/assets"
+  opengameart: "https://opengameart.org"
+  fonts:
+    noto: "https://fonts.google.com/noto"
+    assistant: "https://fonts.google.com/specimen/Assistant"
+    secular_one: "https://fonts.google.com/specimen/Secular+One"
+
+# LangGraph Agent State Management
+langgraph:
+  # Graph configuration
+  checkpointer: "memory"  # Can be "memory", "sqlite", or "redis"
+  interrupt_before: []    # States to interrupt before execution
+  interrupt_after: []     # States to interrupt after execution
+
+  # State persistence
+  persistence:
+    enabled: true
+    backend: "sqlite"
+    database_url: "${DATABASE_URL:-sqlite:///./agent_state.db}"
+    table_name: "agent_checkpoints"
+
+  # State validation
+  validation:
+    strict_types: true
+    validate_transitions: true
+    log_state_changes: true
+
+  # Agent execution settings
+  execution:
+    max_iterations: 20
+    timeout_seconds: 120
+    parallel_execution: false
+    error_recovery: true
+
+# Performance Monitoring
+monitoring:
+  # Metrics collection
+  metrics:
+    enabled: true
+    collection_interval_seconds: 30
+    retention_days: 30
+
+  # Performance thresholds
+  thresholds:
+    page_load_time_ms: 2000
+    test_execution_time_ms: 1000
+    agent_response_time_ms: 5000
+    memory_usage_mb: 500
+
+  # Alerting
+  alerts:
+    enabled: true
+    email_notifications: false
+    webhook_url: "${ALERT_WEBHOOK_URL}"
+
+  # Logging
+  logging:
+    level: "INFO"
+    format: "structured"
+    output: "console"
+    file_output: false
+    log_file: "./logs/tutor.log"
+
+# Database Configuration
+database:
+  # SQLite for development
+  sqlite:
+    enabled: true
+    path: "./data/tutor.db"
+    backup_enabled: true
+    backup_interval_hours: 24
+
+  # PostgreSQL for production (optional)
+  postgresql:
+    enabled: false
+    host: "${DB_HOST:-localhost}"
+    port: "${DB_PORT:-5432}"
+    database: "${DB_NAME:-hebrew_tutor}"
+    username: "${DB_USER:-tutor}"
+    password: "${DB_PASSWORD}"
+    pool_size: 10
+    max_overflow: 20
+
+# Playwright Testing Configuration
+playwright:
+  # Browser configuration
+  browsers: ["chromium", "firefox", "webkit"]
+  headless: true
+  timeout_ms: 30000
+
+  # Test settings
+  test_settings:
+    parallel_workers: 2
+    retries: 2
+    screenshot_on_failure: true
+    video_on_failure: true
+    trace_on_failure: true
+
+  # Hebrew-specific settings
+  hebrew_testing:
+    rtl_validation: true
+    font_rendering_check: true
+    voice_synthesis_test: true
+    character_encoding_test: true
+
+  # Accessibility testing
+  accessibility:
+    wcag_level: "AA"
+    target_size_minimum: 24
+    color_contrast_ratio: 4.5
+    keyboard_navigation: true
+    screen_reader_compatibility: true
+
+# Content Security Policy
+security:
+  csp:
+    default_src: "'self'"
+    script_src: "'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com"
+    style_src: "'self' 'unsafe-inline' https://fonts.googleapis.com"
+    font_src: "'self' https://fonts.gstatic.com"
+    img_src: "'self' data: blob:"
+    connect_src: "'self' http://localhost:*"
+    frame_src: "'none'"
+    object_src: "'none'"
+
+  # Sandbox restrictions for code execution
+  sandbox:
+    allow_scripts: true
+    allow_same_origin: false
+    allow_forms: false
+    allow_popups: false
+    allow_downloads: false
+
+  # Rate limiting
+  rate_limiting:
+    enabled: true
+    max_requests_per_minute: 100
+    max_requests_per_hour: 1000
+
+# Environment-specific overrides
+environments:
+  development:
+    system:
+      debug_mode: true
+    monitoring:
+      metrics:
+        enabled: false
+    security:
+      rate_limiting:
+        enabled: false
+
+  testing:
+    system:
+      debug_mode: true
+    database:
+      sqlite:
+        path: ":memory:"
+    monitoring:
+      alerts:
+        enabled: false
+
+  production:
+    system:
+      debug_mode: false
+    monitoring:
+      metrics:
+        enabled: true
+      alerts:
+        enabled: true
+    security:
+      rate_limiting:
+        enabled: true
+    database:
+      postgresql:
+        enabled: true
+      sqlite:
+        enabled: false
+
+# API Configuration
+api:
+  # FastAPI settings
+  host: "0.0.0.0"
+  port: 8000
+  reload: false
+  workers: 4
+
+  # CORS settings
+  cors:
+    allow_origins: ["http://localhost:3000", "http://localhost:3001"]
+    allow_methods: ["GET", "POST", "PUT", "DELETE"]
+    allow_headers: ["*"]
+    allow_credentials: true
+
+  # Request validation
+  validation:
+    max_request_size_mb: 10
+    max_response_size_mb: 50
+    timeout_seconds: 30
+
+# Webhook Configuration for Context7 and External Integrations
+webhooks:
+  context7:
+    enabled: true
+    url: "${CONTEXT7_WEBHOOK_URL}"
+    secret: "${CONTEXT7_WEBHOOK_SECRET}"
+    events: ["lesson_completed", "milestone_achieved", "error_occurred"]
+
+  external:
+    enabled: false
+    endpoints:
+      - name: "parent_notification"
+        url: "${PARENT_WEBHOOK_URL}"
+        events: ["session_completed", "badge_earned"]
+
+# Backup and Recovery
+backup:
+  enabled: true
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  retention_days: 30
+  destinations:
+    - type: "local"
+      path: "./backups"
+    - type: "s3"
+      bucket: "${BACKUP_S3_BUCKET}"
+      region: "${BACKUP_S3_REGION}"
+      access_key: "${AWS_ACCESS_KEY_ID}"
+      secret_key: "${AWS_SECRET_ACCESS_KEY}"
